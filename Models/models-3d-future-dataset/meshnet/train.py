@@ -26,7 +26,7 @@ labels = label_data[['Object ID (Dataset Original Object ID)', 'Final Inside Lev
 
 # Set the maximum number of data points to use
 MAX = len(labels)
-MAX_VALUE = 2000
+MAX_VALUE = MAX
 labels = labels[:MAX_VALUE]
 
 # Path to the folder containing 3D objects
@@ -64,6 +64,7 @@ if len(vertices_list) == 0:
     exit()
 
 y = np.array(targets) - 1  # Adjust labels to be zero-indexed
+assert np.all((y >= 0) & (y < len(np.unique(y)))), "Labels are out of range!"
 
 class MeshDataset(Dataset):
     def __init__(self, vertices_list, targets, num_points=2048, augment=False):
@@ -164,7 +165,7 @@ if __name__ == "__main__":
     optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-4)  # L2 regularization
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.5)
 
-    num_epochs = 5
+    num_epochs = 50
     for epoch in range(num_epochs):
         model.train()
         running_loss = 0.0
